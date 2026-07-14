@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "author": "阿南 rockmoons（抖音）",
+    "wechat": "rockmoons",
+    "website": "www.rockmoons.com"
+  },
+  "douyin": {
+    "apikey": "",
+    "base_url": "https://api.rockmoons.com/blade-links/openapi/plugin"
+  },
+  "asr": {
+    "provider": "local",
+    "local": {
+      "model_size": "medium",
+      "language": "zh",
+      "device": "cpu"
+    },
+    "cloud": {
+      "endpoint": "",
+      "apikey": ""
+    }
+  },
+  "export": {
+    "feishu": {
+      "app_id": "",
+      "app_secret": "",
+      "bitable_id": "",
+      "table_id": ""
+    }
+  },
+  "batch": {
+    "chunk_size": 50,
+    "interval_ms": 500
+  }
+}
