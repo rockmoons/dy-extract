@@ -140,7 +140,7 @@
 
 ## 🔌 获取 APIKey
 
-访问 [www.rockmoons.com](https://www.rockmoons.com) 注册获取 BladeX-Links 平台 APIKey。
+访问 [www.rockmoons.com](https://www.rockmoons.com) 注册获取 平台 APIKey（API密钥）
 
 注册后可调用 11 个抖音数据接口（视频详情、用户信息、搜索、评论等）。
 
