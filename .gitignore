@@ -1,0 +1,10 @@
+# 排除含敏感信息的配置文件
+config.json
+
+# Python
+__pycache__/
+*.pyc
+
+# 临时文件
+*.tmp
+/tmp/
