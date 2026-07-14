@@ -72,7 +72,7 @@ print(text)
 "
 ```
 
-**模型首次下载：** 第一次运行时自动从 Hugging Face 下载模型文件（medium ~1.5GB）。国内镜像 `hf-mirror.com` 加速后通常 1-3 分钟完成。如果下载失败，提示用户检查网络，或换用 `small` 模型。
+**模型首次下载：** 第一次运行时自动从 Hugging Face 下载模型文件（small ~500MB）。国内镜像 `hf-mirror.com` 加速后通常 1 分钟完成。如果下载失败，提示用户检查网络。
 
 ---
 
@@ -101,21 +101,24 @@ print(text)
 |------|------|
 | `pip: command not found` | 提示安装 Python |
 | 模型下载超时 | 检查镜像是否生效，尝试 `export HF_ENDPOINT=https://hf-mirror.com` |
-| 内存不足 | 换成 `small` 或 `tiny` 模型 |
+| 内存不足 | 换成 `tiny` 模型 |
 | ffmpeg 报错 | 重新 `pip install imageio-ffmpeg` |
 | CPU 太慢（>10分钟的音频） | 建议等待，或告知用户后续会支持云端 ASR |
 
 ---
 
-## 速度参考（medium 模型，CPU）
+## 速度参考（Systran/faster-whisper-small，CPU）
 
 | 音频时长 | 约需时间 |
 |----------|---------|
-| 30 秒 | ~20 秒 |
-| 1 分钟 | ~40 秒 |
-| 5 分钟 | ~3 分钟 |
-| 10 分钟 | ~6 分钟 |
-| 30 分钟 | ~20 分钟 |
+| 30 秒 | ~8 秒 |
+| 1 分钟 | ~15 秒 |
+| 5 分钟 | ~1 分钟 |
+| 10 分钟 | ~2.5 分钟 |
+| 30 分钟 | ~8 分钟 |
+
+> 想更准？config.json 中 model_size 改成 `medium`（1.5GB，慢3倍但质量更高）
+> 想更快？改成 `tiny`（150MB，最快但质量一般）
 
 ---
 
