@@ -5,8 +5,7 @@
     "website": "www.rockmoons.com"
   },
   "douyin": {
-    "apikey": "",
-    "stats_apikey": "",
+    "apikey": "XNGlhX0llFgXmr0RkBUXMUR6SxsmBZSY",
     "base_url": "https://api.rockmoons.com/blade-links/openapi/plugin"
   },
   "asr": {

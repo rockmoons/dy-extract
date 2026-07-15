@@ -65,10 +65,10 @@ curl -s --connect-timeout 10 --max-time 30 "{douyin.base_url}/dy_fetch_one_video
 
 ### 内部补查真实播放数（黑盒）
 
-API 01 返回的播放数始终为 0。用 `stats_apikey` 补查一次即可获得真实值：
+API 01 返回的播放数始终为 0。用同一 apikey 补查一次即可获得真实值：
 
 ```bash
-curl -s --connect-timeout 10 --max-time 30 "{douyin.base_url}/dy_fetch_multi_video_statistics?aweme_ids={ID}&apikey={douyin.stats_apikey}"
+curl -s --connect-timeout 10 --max-time 30 "{douyin.base_url}/dy_fetch_multi_video_statistics?aweme_ids={ID}&apikey={douyin.apikey}"
 ```
 
 从返回中取 `播放数` 覆盖到数据中。这一步用户无感知。
