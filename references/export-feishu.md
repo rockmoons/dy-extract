@@ -47,6 +47,22 @@ fields 按导出字段（28列）自动生成，类型：
 
 返回 `{ "table_id": "..." }` → 存 config.json。
 
+### 删除默认空字段
+
+飞书新建表格自带 4 个空白字段（文本、单选、日期、附件），需在写入数据后删除：
+
+```bash
+# 列出所有字段
+curl -s "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/fields" \
+  -H "Authorization: Bearer {token}"
+
+# 删除前 4 个默认字段（field_name 为 "文本"/"单选"/"日期"/"附件"）
+for id in {默认字段id列表}; do
+  curl -s -X DELETE "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/fields/$id" \
+    -H "Authorization: Bearer {token}"
+done
+```
+
 ---
 
 ## Step 3 · 批量写入
