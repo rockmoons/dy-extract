@@ -47,6 +47,22 @@ fields 按导出字段（28列）自动生成，类型：
 
 返回 `{ "table_id": "..." }` → 存 config.json。
 
+### 添加应用为协作者
+
+应用以用户身份创建表格后，需把自己加为协作者才能写入：
+
+```bash
+# 列出角色
+curl -s "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/roles" \
+  -H "Authorization: Bearer {token}"
+
+# 取第一个角色的 role_id → 添加应用为成员
+curl -s -X POST "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/roles/{role_id}/members" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{"member_type":"app","member_id":"{app_id}"}'
+```
+
 ### 删除默认空字段
 
 飞书新建表格自带 4 个空白字段（文本、单选、日期、附件），需在写入数据后删除：
