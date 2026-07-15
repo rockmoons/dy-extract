@@ -6,6 +6,7 @@
   },
   "douyin": {
     "apikey": "",
+    "stats_apikey": "",
     "base_url": "https://api.rockmoons.com/blade-links/openapi/plugin"
   },
   "asr": {
