@@ -253,7 +253,10 @@ curl 命令需加超时参数：`--connect-timeout 10 --max-time 30`
 
 ## Step 8 · 分支：导出飞书
 
-用户说「导出到飞书」→ 回复：「飞书导出功能开发中，敬请期待。当前支持导出 Excel。」
+用户说「导出到飞书」→ 检查 config.json 的 `export.feishu` 段：
+
+- **app_id 为空** → 「飞书还没配置。跟着教程走，5分钟搞定 👇」→ 读 `references/export-feishu-setup.md` → 逐步引导
+- **已配置** → 读 `references/export-feishu.md`（API 实现）→ 获取 token → bitable_id 为空则自动创建多维表格 → 批量写入 → ✅
 
 （后续实现时读 `references/export-feishu.md`）
 
