@@ -92,7 +92,35 @@ TABLE_ID=$(echo "$RESP" | python -c "import sys,json; print(json.load(sys.stdin)
 
 ---
 
-## Step 3 · 批量写入
+## Step 3 · 分享给用户（重要）
+
+应用创建的多维表格保存在**应用的企业云空间**，用户默认看不到。需要把表格链接发给用户：
+
+```bash
+# 飞书多维表格链接格式
+echo "📋 表格已创建，请点击链接打开：
+https://bytedance.feishu.cn/base/${BITABLE_ID}?from=manual"
+```
+
+如果知道用户的飞书邮箱或 open_id，也可以直接把用户加为协作者：
+
+```bash
+# 把用户加为协作者（可选）
+curl -s -X POST "https://open.feishu.cn/open-apis/drive/v1/permissions/${BITABLE_ID}/members?type=bitable&need_notification=false" \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "member_type": "email",
+    "member_id": "user@example.com",
+    "perm": "full_access"
+  }'
+```
+
+> `member_type` 可选值：`email`（邮箱）、`openid`（用户open_id）、`unionid`（用户union_id）
+
+---
+
+## Step 4 · 批量写入
 
 ```bash
 # 准备数据（Python 脚本处理中文）
