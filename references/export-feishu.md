@@ -1,5 +1,7 @@
 # 飞书多维表格 API 实现
 
+> **已验证：** 应用通过 `tenant_access_token` 创建的多维表格，自动拥有完整读写权限，无需额外授权。
+
 ---
 
 ## 前置条件
@@ -25,72 +27,101 @@ curl -s -X POST https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/int
 如果 `bitable_id` 为空，自动创建：
 
 ```bash
-curl -s -X POST https://open.feishu.cn/open-apis/bitable/v1/apps \
+# 创建多维表格
+RESP=$(curl -s -X POST https://open.feishu.cn/open-apis/bitable/v1/apps \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
-  -d '{"name":"抖音视频数据"}'
+  -d '{"name":"抖音视频数据"}')
+
+# 提取 app_token（即 bitable_id）
+BITABLE_ID=$(echo "$RESP" | python -c "import sys,json; print(json.load(sys.stdin)['data']['app']['app_token'])")
+
+# 存到 config.json
 ```
 
-返回 `{ "app": { "app_token": "..." } }` → 存为 `bitable_id`。
-
-然后创建表：
+然后创建表并写入字段（28列全部一起建）：
 
 ```bash
-curl -s -X POST https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables \
-  -H "Authorization: Bearer {token}" \
-  -d '{"table":{"name":"视频列表","fields":[...]}}'
-```
-
-fields 按导出字段（28列）自动生成，类型：
-- 文本列 → `{ "field_name": "作者昵称", "type": 1 }`
-- 数字列 → `{ "field_name": "点赞数", "type": 2 }`
-
-返回 `{ "table_id": "..." }` → 存 config.json。
-
-### 添加应用为协作者
-
-应用以用户身份创建表格后，需把自己加为协作者才能写入：
-
-```bash
-# 列出角色
-curl -s "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/roles" \
-  -H "Authorization: Bearer {token}"
-
-# 取第一个角色的 role_id → 添加应用为成员
-curl -s -X POST "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/roles/{role_id}/members" \
+# 创建表（一次性定义所有字段）
+RESP=$(curl -s -X POST "https://open.feishu.cn/open-apis/bitable/v1/apps/${BITABLE_ID}/tables" \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
-  -d '{"member_type":"app","member_id":"{app_id}"}'
+  -d '{
+    "table": {
+      "name": "视频列表",
+      "fields": [
+        {"field_name": "作品ID", "type": 1},
+        {"field_name": "作品标题", "type": 1},
+        {"field_name": "作品简介", "type": 1},
+        {"field_name": "作者昵称", "type": 1},
+        {"field_name": "作者ID", "type": 1},
+        {"field_name": "作者粉丝数", "type": 2},
+        {"field_name": "点赞数", "type": 2},
+        {"field_name": "评论数", "type": 2},
+        {"field_name": "收藏数", "type": 2},
+        {"field_name": "分享数", "type": 2},
+        {"field_name": "转发数", "type": 2},
+        {"field_name": "下载数", "type": 2},
+        {"field_name": "播放数", "type": 2},
+        {"field_name": "视频时长", "type": 1},
+        {"field_name": "发布时间", "type": 1},
+        {"field_name": "创建时间", "type": 1},
+        {"field_name": "作品封面", "type": 1},
+        {"field_name": "视频链接", "type": 1},
+        {"field_name": "音频链接", "type": 1},
+        {"field_name": "分享链接", "type": 1},
+        {"field_name": "分享标题", "type": 1},
+        {"field_name": "话题", "type": 1},
+        {"field_name": "标签", "type": 1},
+        {"field_name": "视频音乐", "type": 1},
+        {"field_name": "作者作品数", "type": 2},
+        {"field_name": "总赞数", "type": 2},
+        {"field_name": "视频合集", "type": 1},
+        {"field_name": "作者签名", "type": 1}
+      ]
+    }
+  }')
+
+# 提取 table_id
+TABLE_ID=$(echo "$RESP" | python -c "import sys,json; print(json.load(sys.stdin)['data']['table_id'])")
+
+# 存到 config.json
 ```
 
-### 删除默认空字段
-
-飞书新建表格自带 4 个空白字段（文本、单选、日期、附件），需在写入数据后删除：
-
-```bash
-# 列出所有字段
-curl -s "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/fields" \
-  -H "Authorization: Bearer {token}"
-
-# 删除前 4 个默认字段（field_name 为 "文本"/"单选"/"日期"/"附件"）
-for id in {默认字段id列表}; do
-  curl -s -X DELETE "https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/fields/$id" \
-    -H "Authorization: Bearer {token}"
-done
-```
+> 字段类型：1=文本, 2=数字。建表时一次性定义全部字段，飞书不会自动生成默认字段。
 
 ---
 
 ## Step 3 · 批量写入
 
 ```bash
-curl -s -X POST https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/records/batch_create \
-  -H "Authorization: Bearer {token}" \
-  -H "Content-Type: application/json" \
-  -d '{"records":[{...}]}'
-```
+# 准备数据（Python 脚本处理中文）
+python -c "
+import requests, json
 
-每批最多 500 条，超量分批写入。
+token = '{token}'
+bitable_id = '{BITABLE_ID}'
+table_id = '{TABLE_ID}'
+
+# 一条记录的 fields
+records = [
+    {'fields': {
+        '作品ID': aweme_id,
+        '作品标题': title,
+        '作品简介': desc,
+        # ... 所有字段
+    }}
+]
+
+# 批量写入（每批最多500条）
+url = f'https://open.feishu.cn/open-apis/bitable/v1/apps/{bitable_id}/tables/{table_id}/records/batch_create'
+resp = requests.post(url,
+    headers={'Authorization': f'Bearer {token}'},
+    json={'records': records}
+)
+print(resp.json())
+"
+```
 
 ---
 
